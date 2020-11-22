@@ -1,4 +1,4 @@
-#include "cuda_runtime.h"
+п»ї#include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include "iostream"
 #include <cstdlib>
@@ -102,9 +102,9 @@ int main()
 		return 0;
 	}
 
-	//Создание обработчиков событий (определение времени)
+	//РЎРѕР·РґР°РЅРёРµ РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРІ СЃРѕР±С‹С‚РёР№ (РѕРїСЂРµРґРµР»РµРЅРёРµ РІСЂРµРјРµРЅРё)
 	cudaEvent_t start, stop;
-	//Инициализация переменной времени расчета
+	//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїРµСЂРµРјРµРЅРЅРѕР№ РІСЂРµРјРµРЅРё СЂР°СЃС‡РµС‚Р°
 	float gpuTime = 0.0f;
 
 	cuerr = cudaEventCreate(&start);
@@ -124,7 +124,7 @@ int main()
 
 	cudaEventRecord(start, 0);
 
-	//Копирование данных с хоста на девайс
+	//РљРѕРїРёСЂРѕРІР°РЅРёРµ РґР°РЅРЅС‹С… СЃ С…РѕСЃС‚Р° РЅР° РґРµРІР°Р№СЃ
 	cuerr = cudaMemcpy(deviceA, hostA, memory, cudaMemcpyHostToDevice);
 	if (cuerr != cudaSuccess) {
 		fprintf(stderr, "Cannot copy matrix A from host to device: %s\n",
@@ -139,12 +139,12 @@ int main()
 		return 0;
 	}
 
-	//Установка точки старта
+	//РЈСЃС‚Р°РЅРѕРІРєР° С‚РѕС‡РєРё СЃС‚Р°СЂС‚Р°
 	cudaEventRecord(start, 0);
 	dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
-	//Размер сетки 
+	//Р Р°Р·РјРµСЂ СЃРµС‚РєРё 
 	dim3 GRID_SIZE(N / threads.x, N / threads.y);
-	//Запуск ядра
+	//Р—Р°РїСѓСЃРє СЏРґСЂР°
 	GPU_matMul << <GRID_SIZE, threads >> > (deviceA, deviceB, N, deviceC);
 
 	cuerr = cudaGetLastError();
@@ -171,7 +171,7 @@ int main()
 		return 0;
 	}
 
-	//Установка точки окончания
+	//РЈСЃС‚Р°РЅРѕРІРєР° С‚РѕС‡РєРё РѕРєРѕРЅС‡Р°РЅРёСЏ
 	cuerr = cudaEventRecord(stop, 0);
 	if (cuerr != cudaSuccess)
 	{
@@ -179,7 +179,7 @@ int main()
 			cudaGetErrorString(cuerr));
 		return 0;
 	}
-	//Копирование результата на хост
+	//РљРѕРїРёСЂРѕРІР°РЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅР° С…РѕСЃС‚
 	cuerr = cudaMemcpy(hostC, deviceC, memory, cudaMemcpyDeviceToHost);
 	if (cuerr != cudaSuccess)
 	{
@@ -190,14 +190,14 @@ int main()
 
 	cudaEventElapsedTime(&gpuTime, start, stop);
 
-	//Проверка правильности результата и расчет времени
+	//РџСЂРѕРІРµСЂРєР° РїСЂР°РІРёР»СЊРЅРѕСЃС‚Рё СЂРµР·СѓР»СЊС‚Р°С‚Р° Рё СЂР°СЃС‡РµС‚ РІСЂРµРјРµРЅРё
 	if (checkResult(matrixC_CPU, hostC, N))
 	{
 		cout << "CPU: " << time * 1000.0 / CLOCKS_PER_SEC << " ms" << endl;
 		cout << "GPU: " << gpuTime << " ms";
 	}
 
-	//Освобождение памяти 
+	//РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё 
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
 	cudaFree(deviceA);
